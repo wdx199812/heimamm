@@ -1,15 +1,27 @@
 {
-  "name": "heimamm50",
+  "name": "heimamm60",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "serve": "vue-cli-service serve --open",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "axios": "^0.20.0",
     "core-js": "^3.6.5",
-    "vue": "^2.6.11"
+    "echarts": "^4.9.0",
+    "element-china-area-data": "^5.0.2",
+    "element-ui": "^2.13.2",
+    "i": "^0.3.6",
+    "less": "^3.12.2",
+    "less-loader": "^7.0.2",
+    "moment": "^2.29.1",
+    "npm": "^6.14.8",
+    "vue": "^2.6.12",
+    "vue-quill-editor": "^3.0.6",
+    "vue-router": "^3.4.7",
+    "vuex": "^3.5.1"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
