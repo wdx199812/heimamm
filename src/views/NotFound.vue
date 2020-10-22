@@ -1,5 +1,9 @@
 <template>
-  <div>注册</div>
+  <div>
+    <router-link to="/login">
+      <img src="./404/Snipaste_2020-10-22_10-15-16.png" alt=""
+    /></router-link>
+  </div>
 </template>
 
 <script>
