@@ -70,7 +70,9 @@
             >
           </el-form-item>
           <el-form-item label="" size="normal">
-            <el-button type="primary" style="width:100%">注册</el-button>
+            <el-button type="primary" style="width:100%" @click="registerUser"
+              >注册</el-button
+            >
           </el-form-item>
         </el-form>
       </div>
@@ -78,21 +80,28 @@
         <img src="../../assets/login_bg.png" alt="" />
       </div>
     </div>
+    <!-- 注册框子组件 -->
+    <register ref="registerRef"></register>
   </div>
 </template>
 
 <script>
 // 按需导入
-// import { settoken } from '../../utils/token';
+import { settoken } from '../../utils/token';
+// 导入注册框的 子组件 dialog
+import Register from './Register';
 export default {
   name: 'Login',
+  components: {
+    Register,
+  },
   data() {
     return {
       loginForm: {
-        phone: '',
-        password: '',
-        code: '',
-        ischecked: true,
+        phone: '', //电话号码
+        password: '', //密码
+        code: '', //验证码
+        ischecked: true, //是否勾选用户协议
       },
       caphchaUrl: `${process.env.VUE_APP_BASEURL}/captcha?type=login`,
       // 验证规则
@@ -162,36 +171,43 @@ export default {
     };
   },
   methods: {
+    // 1.点击图片刷新验证码
     getcaphcha() {
       this.caphchaUrl = `${
         process.env.VUE_APP_BASEURL
-      }/captcha?type=login$t=${new Date() - 0}`;
+      }/captcha?type=login&t=${new Date() - 0}`;
     },
-    // 登录事件
+    // 2.登录事件
     submitForm() {
       // 先验证表单
       this.$refs.form.validate(async (valid) => {
-        if (!valid) {
-          console.log('error submit!!');
-          return false;
+        if (!valid) return;
+        // 验证成功发送axios请求
+        const res = await this.$http.post('/login', this.loginForm);
+        console.log(res);
+        if (res.code == 200) {
+          // 保存token
+          settoken(res.data.token);
+          // 验证成功将会跳转
+          this.$message({
+            message: '恭喜你，登录成功',
+            type: 'success',
+          });
+          this.$router.push('/layout');
+          // 刷新验证码
+          this.getcaphcha();
         } else {
-          // 验证成功发送axios请求
-          const res = await this.$http.post('/login', this.loginForm);
-          console.log(res);
-          if (res.data.code == 200) {
-            this.$router.push('/welcome');
-            this.caphchaUrl = `${
-              process.env.VUE_APP_BASEURL
-            }/captcha?type=login$t=${new Date() - 0}`;
-          } else {
-            console.log(res.data.message);
-            this.caphchaUrl = `${
-              process.env.VUE_APP_BASEURL
-            }/captcha?type=login$t=${new Date() - 0}`;
-          }
+          console.log(res.message);
+          this.$message.error(res.message);
+          // 失败也刷新验证码
+          this.getcaphcha();
         }
       });
-      // 发送axios请求
+    },
+    // 注册按钮
+    registerUser() {
+      // console.log(this.$refs.registerRef); 获取到的子组件dom
+      this.$refs.regieterRef.dialogVisible = true;
     },
   },
   mounted() {},

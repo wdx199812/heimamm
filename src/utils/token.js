@@ -5,11 +5,11 @@ const settoken = (Token) => {
 };
 // 获取token
 const gettoken = () => {
-  localStorage.getItem(KEY);
+  return localStorage.getItem(KEY);
 };
 // 删除token
 const removetoken = () => {
   localStorage.removeItem(KEY);
 };
-// 导出
+// 按需导出
 export { settoken, gettoken, removetoken };
