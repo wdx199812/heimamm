@@ -183,8 +183,7 @@ export default {
       this.$refs.form.validate(async (valid) => {
         if (!valid) return;
         // 验证成功发送axios请求
-        const res = await this.$http.post('/login', this.loginForm);
-        console.log(res);
+        const res = await this.$axios.post('/login', this.loginForm);
         if (res.code == 200) {
           // 保存token
           settoken(res.data.token);
@@ -197,17 +196,18 @@ export default {
           // 刷新验证码
           this.getcaphcha();
         } else {
-          console.log(res.message);
           this.$message.error(res.message);
           // 失败也刷新验证码
           this.getcaphcha();
+          // 把验证码框清空
+          this.loginForm.code = '';
         }
       });
     },
     // 注册按钮
     registerUser() {
       // console.log(this.$refs.registerRef); 获取到的子组件dom
-      this.$refs.regieterRef.dialogVisible = true;
+      this.$refs.registerRef.dialogVisible = true;
     },
   },
   mounted() {},

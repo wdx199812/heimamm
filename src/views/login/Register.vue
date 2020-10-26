@@ -210,7 +210,7 @@ export default {
         this.getcodeUrl();
         return;
       }
-      const res = await this.$http.post('/sendsms', {
+      const res = await this.$axios.post('/sendsms', {
         code: this.registerForm.code,
         phone: this.registerForm.phone,
       });
@@ -228,12 +228,12 @@ export default {
     beforeAvatarUpload(file) {
       const isJPG =
         file.type === 'image/jpeg' ||
-        file.type === 'image/jpg' ||
+        file.type === 'image/gif' ||
         file.type === 'image/png';
       const isLt2M = file.size / 1024 / 1024 < 2;
 
       if (!isJPG) {
-        this.$message.error('上传头像图片只能是 JPG/PNG/JPEG 格式!');
+        this.$message.error('上传头像图片只能是 JPG/PNG/GIF 格式!');
       }
       if (!isLt2M) {
         this.$message.error('上传头像图片大小不能超过 2MB!');
@@ -249,7 +249,7 @@ export default {
       console.log(file);
       // 转换为base64格式的图片
       // 文件预览
-      // this.imageUrl = URL.createObjectURL(file.raw); //方法一
+      // this.imageUrl = URL.createObjectURL(file.raw); //方法一55552
       // 完整的地址
       this.imageUrl = process.env.VUE_APP_BASEURL + '/' + res.data.file_path; //方法二
       // 给需要传参的模型值赋值
@@ -261,7 +261,7 @@ export default {
         if (!valid) return;
         // 对象中删除中不需要的参数 图形验证码
         delete this.registerForm.code;
-        const res = await this.$http.post('/register', this.registerForm);
+        const res = await this.$axios.post('/register', this.registerForm);
         if (res.code == 200) {
           this.$message({
             message: '恭喜你，注册成功',
