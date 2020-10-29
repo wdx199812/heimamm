@@ -171,6 +171,6 @@ export default {
   min-height: 400px;
 }
 .main {
-  background-color: rgb(200, 200, 200);
+  background-color: #e6e7e9;
 }
 </style>

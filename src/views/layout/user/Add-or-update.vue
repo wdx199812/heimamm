@@ -4,6 +4,7 @@
       :title="mode == 'add' ? '新增用户' : '编辑用户'"
       :visible.sync="dialogVisible"
       width="600px"
+      center
     >
       <el-form
         :model="form"
@@ -71,7 +72,7 @@ export default {
         username: '', //用户名
         email: '', //邮箱
         phone: '', //电话
-        role_id: '', //角色
+        role_id: '1', //角色
         status: '', //状态
         remark: '', //备注
       },
@@ -129,8 +130,6 @@ export default {
           },
         ],
         role_id: [{ required: true, message: '请选择角色', trigger: 'change' }],
-        status: [{ required: true, message: '请选择状态', trigger: 'change' }],
-        // remark: [{ required: true, message: '请选择', trigger: 'blur' }],
       },
     };
   },
@@ -144,55 +143,38 @@ export default {
         let message = '';
         // 新增
         if (this.mode == 'add') {
+          delete this.form.id;
           url = '/user/add';
           message = '新增成功';
-          delete this.form.id;
-          const res = await this.$axios.post(url, this.form);
-          // console.log(res);
-          if (res.code == 200) {
-            this.$message({
-              type: 'success',
-              message,
-            });
-            this.dialogVisible = false;
-            // 清空表单
-            this.$refs.form.resetFields();
-            // 重新加载页面 直接调用父组件的 search方法重新渲染页面
-            this.$parent.search();
-          } else {
-            this.$message.error(res.message);
-          }
-        } else {
-          // 把值给到form表单
-          console.log(this.form);
-          // 发送编辑请求
+        } else if (this.mode == 'edit') {
           url = '/user/edit';
           message = '编辑成功';
-          const res = await this.$axios.post(url, {
-            ...this.form, //三位运算符
+        }
+        const res = await this.$axios.post(url, { ...this.form });
+        // console.log(res);
+        if (res.code == 200) {
+          this.$message({
+            type: 'success',
+            message,
           });
-          if (res.code == 200) {
-            this.$message({
-              type: 'success',
-              message: '修改成功',
-            });
-            this.$parent.search();
-            this.dialogVisible = false;
-            this.$refs.form.resetFields();
-          } else {
-            this.$message({
-              type: 'waring',
-              message: res.message,
-            });
-          }
+          // 隐藏dialog
+          this.dialogVisible = false;
+          // 重新加载页面 直接调用父组件的 search方法重新渲染页面
+          this.$parent.search();
+        } else {
+          this.$message.error(res.message);
         }
       });
     },
-    //  清空表单和表单验证
   },
-  // 生命周期钩子
-  updated() {},
-  //
+  watch: {
+    // 监听dialog框的显示和隐藏从而 清空表单内元素和移除校检属性
+    dialogVisible(newvalue) {
+      if (!newvalue) {
+        this.$refs.form.clearValidate();
+      }
+    },
+  },
 };
 </script>
 

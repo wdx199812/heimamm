@@ -13,6 +13,9 @@ import './utils/request';
 import './plugins/element';
 // 导入全局样式包
 import './styles/base.less';
+// 导入echarts
+import echarts from 'echarts';
+Vue.prototype.$echarts = echarts;
 new Vue({
   render: (h) => h(App),
   // 挂载到vue实例中 让vue拥有全局路由功能

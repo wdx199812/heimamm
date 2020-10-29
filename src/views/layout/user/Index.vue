@@ -3,20 +3,20 @@
     <!-- 搜索清除新增框 -->
     <el-card shadow="always">
       <el-form
-        :model="userFrom"
+        :model="form"
         ref="searchForm"
         label-width="80px"
         :inline="true"
         size="normal"
       >
         <el-form-item label="用户名" prop="username">
-          <el-input v-model="userFrom.username"></el-input>
+          <el-input v-model="form.username"></el-input>
         </el-form-item>
         <el-form-item label="用户邮箱" prop="email">
-          <el-input v-model="userFrom.email"></el-input>
+          <el-input v-model="form.email"></el-input>
         </el-form-item>
         <el-form-item label="角色" prop="role_id">
-          <el-select v-model="userFrom.role_id" placeholder="请选择">
+          <el-select v-model="form.role_id" placeholder="请选择">
             <!-- <el-option label="请选择"> </el-option> -->
             <el-option label="超级管理员" value="1"></el-option>
             <el-option label="管理员" value="2"> </el-option>
@@ -106,7 +106,7 @@ export default {
   data() {
     return {
       // 搜索表单
-      userFrom: {
+      form: {
         username: '', //用户名
         email: '', //邮箱
         role_id: '', //角色 1超级管理员 2.管理员 3.老师 4.学生
@@ -130,7 +130,7 @@ export default {
         params: {
           page: this.page,
           limit: this.limit,
-          ...this.userFrom, //三位运算符
+          ...this.form, //三位运算符
           // 等于 username：this。userForm.username 等所有属性
         },
       });
@@ -163,6 +163,7 @@ export default {
     clearVal() {
       this.page = 1;
       this.$refs.searchForm.resetFields();
+      this.search();
     },
     // 更改当前状态
     async setStatus(id) {
@@ -175,37 +176,46 @@ export default {
       }
     },
     // 删除
-    async deleteUser(username, id) {
-      const res = await this.$axios.post('/user/remove', { id });
-      // console.log(res);
-      if (res.code == 200) {
-        this.$confirm(`你确定要删除用户 ${username} 吗？`, '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning',
-        })
-          .then(() => {
+    deleteUser(username, id) {
+      this.$confirm(`你确定要删除用户 ${username} 吗？`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      })
+        .then(async () => {
+          const res = await this.$axios.post('/user/remove', { id });
+          if (res.code == 200) {
             this.$message({
               type: 'success',
               message: '删除成功!',
             });
             // 刷新页面
             this.search();
-          })
-          .catch(() => {
-            this.$message({
-              type: 'info',
-              message: '已取消删除',
-            });
+          }
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除',
           });
-      }
+        });
     },
     // 新增
     add() {
       this.$refs.addOrUpdateRef.mode = 'add';
       this.$refs.addOrUpdateRef.dialogVisible = true;
+      this.$refs.addOrUpdateRef.form = {
+        id: '', //id
+        username: '', //用户名
+        email: '', //邮箱
+        phone: '', //电话
+        role_id: '', //角色
+        status: '', //状态
+        remark: '', //备注
+      };
       this.$nextTick(() => {
-        this.$refs.addOrUpdateRef.$refs.form.resetFields();
+        // 清空校检规则
+        this.$refs.addOrUpdateRef.$refs.form.clearValidate();
       });
     },
     // 编辑
@@ -215,13 +225,12 @@ export default {
       this.$refs.addOrUpdateRef.mode = 'edit';
       // 显示dialog
       this.$refs.addOrUpdateRef.dialogVisible = true;
-      // 深拷贝
+      // 深拷贝   或者 {...form}
       this.$refs.addOrUpdateRef.form = JSON.parse(JSON.stringify(forms));
       // 拿到子组件的dom元素 移除表单的校检结果，传入待移除的表单项的prop属性或prop组成的数组 ，不传则移除整个表单的校检结果
-      // this.$refs.addOrUpdateRef.$refs.form.clearValidate();
-      this.$nextTick(() => {
-        this.$refs.addOrUpdateRef.$refs.form.clearValidate();
-      });
+      // this.$nextTick(() => {
+      //   this.$refs.addOrUpdateRef.$refs.form.clearValidate();
+      // });
     },
   },
 };
