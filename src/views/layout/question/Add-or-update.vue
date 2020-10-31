@@ -80,6 +80,7 @@
                 v-for="item in typies"
                 :key="item.value"
                 :label="item.value"
+                @change="typechange"
                 >{{ item.label }}</el-radio
               >
             </el-radio-group>
@@ -116,15 +117,11 @@
           />
           <!-- @change="onEditorChange($event)" -->
         </el-form-item>
-        <!-- 题目答案单选 -->
-        <el-form-item label="单选" prop="single_select_answer">
-          <question-upload></question-upload>
+        <!-- 题型选项 单选 多选 简答-->
+        <el-form-item :label="typeData[form.type]" :prop="propsData[form.type]">
+          <question-type :form="form"></question-type>
         </el-form-item>
         <hr />
-        <!-- 解析视频 -->
-        <el-form-item label="解析视频" size="normal">
-          <span>解析视频</span>
-        </el-form-item>
         <!-- 答案解析 -->
         <el-form-item
           label="答案解析"
@@ -141,6 +138,10 @@
           />
         </el-form-item>
         <hr />
+        <!-- 解析视频 -->
+        <el-form-item label="解析视频" size="normal">
+          <upload-file class="setMargin" type="video" :obj="form"></upload-file>
+        </el-form-item>
         <el-form-item
           style="margin-top:20px"
           label="试题备注"
@@ -166,10 +167,12 @@ import { quillEditor } from 'vue-quill-editor';
 import 'quill/dist/quill.core.css';
 import 'quill/dist/quill.snow.css';
 import 'quill/dist/quill.bubble.css';
-import QuestionUpload from './Question-type';
+import QuestionType from './Question-type';
+// 上传组件
+import UploadFile from './Upload-file';
 export default {
   name: 'questionAddorEdit',
-  components: { quillEditor, QuestionUpload },
+  components: { quillEditor, QuestionType, UploadFile },
   created() {
     this.options = regionData;
   },
@@ -214,16 +217,18 @@ export default {
   },
   data() {
     return {
+      // 根据题型来选择显示不同的选项
+      typeData: { 1: '单选', 2: '多选', 3: '简答' },
+      // 验证规则
+      propsData: {
+        1: 'single_select_answer',
+        2: 'multiple_select_answer',
+        3: 'short_answer',
+      },
       // quill-edit
       quillValidate: '',
       // city
       options: regionData,
-      singles: [
-        { value: 1, label: 'A' },
-        { value: 2, label: 'B' },
-        { value: 3, label: 'C' },
-        { value: 4, label: 'D' },
-      ],
       titleText: '', //编辑新增dialog框title显示的文字
       dialogVisible: false, //是否显示dialog
       mode: '', //约定模式 add为新增 edit为编辑
@@ -236,12 +241,33 @@ export default {
         type: 1, // 题型 1单选 、2多选 、3简答
         difficulty: 1, //	题目难度 1简单 、2一般 、3困难
         single_select_answer: '', //单选题答案
-        multiple_select_answer: '', // array 	多选题答案
+        multiple_select_answer: [], // array 	多选题答案
         short_answer: '', // 	简答题答案
         video: '', // 解析视频地址
         answer_analyze: '', // 	答案解析
         remark: '', // 答案备注
-        select_options: '', //array 	选项，介绍，图片介绍
+        select_options: [
+          {
+            label: 'A',
+            text: '狗不理',
+            image: '',
+          },
+          {
+            label: 'B',
+            text: '猫不理',
+            image: '',
+          },
+          {
+            label: 'C',
+            text: '麻花',
+            image: '',
+          },
+          {
+            label: 'D',
+            text: '炸酱面',
+            image: '',
+          },
+        ], //array 	选项，介绍，图片介绍
       },
       // 校验规则
       rules: {
@@ -249,12 +275,6 @@ export default {
           {
             required: true,
             message: '标题不能为空',
-            trigger: 'change',
-          },
-          {
-            min: 4,
-            max: 30,
-            message: '长度在 4 到 50个字符',
             trigger: 'change',
           },
         ],
@@ -276,6 +296,15 @@ export default {
         remark: [
           { required: true, message: '试题备注不能为空', trigger: 'blur' },
         ],
+        single_select_answer: [
+          { required: true, message: '单选题不能为空', trigger: 'change' },
+        ],
+        multiple_select_answer: [
+          { required: true, message: '多选题不能为空', trigger: 'change' },
+        ],
+        short_answer: [
+          { required: true, message: '简答题不能为空', trigger: 'blur' },
+        ],
       },
       editorOption: {
         placeholder: '请在这里输入试题标题',
@@ -293,14 +322,15 @@ export default {
         let message = '';
         // 新增
         if (this.mode == 'add') {
-          delete this.form.id;
-          url = '/subject/add';
+          url = '/question/add';
           message = '新增成功';
         } else if (this.mode == 'edit') {
-          url = '/subject/edit';
+          // 后台问题 提交时需要把 数组转换成字符串
+          this.form.city = this.form.city.join(',');
+          url = '/question/edit';
           message = '编辑成功';
         }
-        const res = await this.$axios.post(url, { ...this.form });
+        const res = await this.$axios.post(url, this.form);
         // console.log(res);
         if (res.code == 200) {
           this.$message({
@@ -326,19 +356,27 @@ export default {
     onEditorChange(val) {
       this.$refs.form.validateField(val);
     },
+    // 题型选择
+    typechange() {
+      this.$refs.form.clearValidate([
+        'single_select_answer',
+        'short_answer',
+        'multiple_select_answer',
+      ]);
+    },
   },
   watch: {
     // 监听dialog框的显示和隐藏从而 清空表单内元素和移除校检属性
     dialogVisible(newvalue) {
       if (!newvalue) {
-        this.$refs.form.resetFields();
+        this.$refs.form.clearValidate();
       }
     },
   },
 };
 </script>
 
-<style>
+<style lang="less">
 .el-form-item {
   margin-bottom: 22px;
 }
@@ -370,5 +408,12 @@ export default {
 }
 .ql-editor {
   height: 300px;
+}
+.setMargin {
+  margin-left: 0px !important;
+  margin-top: 40px;
+}
+.avatar-uploader {
+  text-align: left;
 }
 </style>

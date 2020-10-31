@@ -375,18 +375,47 @@ export default {
     add() {
       this.$refs.addOrUpdateRef.mode = 'add';
       this.$refs.addOrUpdateRef.dialogVisible = true;
-      // this.$refs.addOrUpdateRef.form = {
-      //   id: '',
-      //   rid: '', //学科编号
-      //   name: '', //学科名称
-      //   short_name: '', //学科简称
-      //   intro: '', //学科简介
-      //   remark: '', //学科备注
-      // };
-      // this.$nextTick(() => {
-      //   // 清空校检规则
-      //   this.$refs.addOrUpdateRef.$refs.form.clearValidate();
-      // });
+      (this.$refs.addOrUpdateRef.form = {
+        title: '', //标题
+        subject: '', //学科id标识
+        step: '', //阶段1、初级 2、中级 3、高级
+        enterprise: '', //企业id标识
+        city: [], // array 	[省、市、区县]
+        type: 1, // 题型 1单选 、2多选 、3简答
+        difficulty: 1, //	题目难度 1简单 、2一般 、3困难
+        single_select_answer: '', //单选题答案
+        multiple_select_answer: [], // array 	多选题答案
+        short_answer: '', // 	简答题答案
+        video: '', // 解析视频地址
+        answer_analyze: '', // 	答案解析
+        remark: '', // 答案备注
+        select_options: [
+          {
+            label: 'A',
+            text: '狗不理',
+            image: '',
+          },
+          {
+            label: 'B',
+            text: '猫不理',
+            image: '',
+          },
+          {
+            label: 'C',
+            text: '麻花',
+            image: '',
+          },
+          {
+            label: 'D',
+            text: '炸酱面',
+            image: '',
+          },
+        ], //array 	选项，介绍，图片介绍
+      }),
+        this.$nextTick(() => {
+          // 清空校检规则
+          this.$refs.addOrUpdateRef.$refs.form.clearValidate();
+        });
     },
     // 编辑
     edit(forms) {
@@ -395,8 +424,12 @@ export default {
       this.$refs.addOrUpdateRef.mode = 'edit';
       // 显示dialog
       this.$refs.addOrUpdateRef.dialogVisible = true;
-      // 深拷贝   或者 {...form}
       this.$refs.addOrUpdateRef.form = JSON.parse(JSON.stringify(forms));
+      this.$refs.addOrUpdateRef.form.city = forms.city.split(',');
+      this.$refs.addOrUpdateRef.form.multiple_select_answer = forms.multiple_select_answer.split(
+        ','
+      );
+      // 深拷贝   或者 {...form}
     },
     //获取学科列表内名称和企业列表名称
     async getsubjectList() {

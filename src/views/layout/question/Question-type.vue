@@ -1,60 +1,74 @@
 <template>
   <div class="questionType">
-    <div v-for="item in select_options" :key="item.label" class="item">
-      <el-radio-group v-model="single_select_answer">
-        <el-radio :key="item.label" :label="item.label">
-          {{ item.label }}
-          <el-input :key="index" v-model="item.text" size="normal"></el-input>
-          <upload style="margin-left: 15px;" class="avatar-uploader"></upload>
-        </el-radio>
-      </el-radio-group>
+    <!-- 单选 -->
+    <div v-if="form.type == 1">
+      <div class="item" v-for="item in form.select_options" :key="item.label">
+        <el-radio v-model="form.single_select_answer" :label="item.label">{{
+          item.label
+        }}</el-radio>
+        <el-input v-model="item.text"></el-input>
+        <upload-file type="image" :obj="item"></upload-file>
+      </div>
+    </div>
+    <!-- 多选 -->
+    <div v-else-if="form.type == 2">
+      <div class="item" v-for="item in form.select_options" :key="item.label">
+        <el-checkbox
+          v-model="form.multiple_select_answer"
+          :label="item.label"
+          >{{ item.label }}</el-checkbox
+        >
+        <el-input v-model="item.text" style="margin: 0 15px"></el-input>
+        <upload-file type="image" :obj="item"></upload-file>
+      </div>
+    </div>
+    <!-- 简答题 -->
+    <div v-if="form.type == 3">
+      <input
+        type="textarea"
+        v-model="form.short_answer"
+        rows="20"
+        style="width:100%"
+      />
     </div>
   </div>
 </template>
 
 <script>
-import Upload from './Upload-file';
+import UploadFile from './Upload-file';
 export default {
-  name: '',
-  components: { Upload },
-  props: {},
-  data() {
-    return {
-      // 单选题答案
-      single_select_answer: '',
-      select_options: [
-        {
-          label: 'A',
-          text: '狗不理',
-          image: 'upload/20191129/fd5f03a07d95e3948860240564b180e4.jpeg',
-        },
-        {
-          label: 'B',
-          text: '猫不理',
-          image: 'upload/20191129/e93e7bb72accda7f3159cdabc4203991.jpeg',
-        },
-        {
-          label: 'C',
-          text: '麻花',
-          image: 'upload/20191129/b7caf98be9d0aa6764b0112ba0dfa19e.jpeg',
-        },
-        {
-          label: 'D',
-          text: '炸酱面',
-          image: 'upload/20191129/4067f19ab53a5e8388ad3459e23110f0.jpeg',
-        },
-      ],
-      radios: [{ label: 'A' }, { label: 'B' }, { label: 'C' }, { label: 'D' }],
-    };
+  name: 'questionType',
+  components: { UploadFile },
+  props: {
+    type: String,
+    form: {
+      type: Object,
+      default: function() {
+        return {};
+      },
+    },
   },
-  mounted() {},
+  data() {
+    return {};
+  },
   methods: {},
 };
 </script>
 
-<style scoped lang="less">
-.questionType .item {
-  display: flex;
-  justify-content: space-between;
+<style lang="less">
+.questionType {
+  .el-input {
+    color: #606266;
+    cursor: pointer;
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+  .item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 200px;
+    overflow: hidden;
+  }
 }
 </style>
