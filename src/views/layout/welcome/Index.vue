@@ -1,22 +1,13 @@
 <template>
-  <div>
-    welcome
-  </div>
+  <el-card>
+    <div>亲爱的-{{ $store.getters.getuserInfo.username }}-欢迎来到德莱联盟</div>
+    <!-- card body -->
+  </el-card>
 </template>
 
 <script>
 export default {
-  name: '',
-  components: {},
-  props: {},
-  data() {
-    return {};
-  },
-  computed: {},
-  watch: {},
-  created() {},
-  mounted() {},
-  methods: {},
+  name: 'welcome',
 };
 </script>
 

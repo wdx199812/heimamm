@@ -229,6 +229,7 @@ export default {
         remark: '', //企业备注
       };
       this.$nextTick(() => {
+        // 在表单渲染完成后
         // 清空校检规则
         this.$refs.addOrUpdateRef.$refs.form.clearValidate();
       });
@@ -240,7 +241,7 @@ export default {
       this.$refs.addOrUpdateRef.mode = 'edit';
       // 显示dialog
       this.$refs.addOrUpdateRef.dialogVisible = true;
-      // 深拷贝   或者 {...form}
+      // 深拷贝   引用对象类型需要用{...form}浅拷贝     深拷贝JSON.parse（JSON.stringify()）  多级数据一定要深拷贝
       this.$refs.addOrUpdateRef.form = JSON.parse(JSON.stringify(forms));
     },
   },

@@ -1,27 +1,25 @@
 <template>
-  <div>
-    <el-dialog
-      :title="mode == 'add' ? '新增试题' : '编辑试题'"
-      :visible.sync="dialogVisible"
-      center
-      fullscreen
-    >
+  <div class="question-edit">
+    <el-dialog :visible.sync="dialogVisible" center fullscreen>
+      <div class="title" slot="title">
+        {{ mode === 'add' ? '新增题目' : '修改题目' }}
+      </div>
       <el-form
         :model="form"
         ref="form"
         :rules="rules"
         label-width="120px"
+        label-position="left"
         :inline="false"
         size="normal"
-        class="itemform"
-        style="width:832px;margin:0 auto;text-align:left"
+        class="form"
       >
         <!-- 学科 -->
         <el-form-item label="学科" prop="subject">
           <el-select
-            style="width:300px"
             v-model="form.subject"
             placeholder="请选择学科"
+            class="select"
           >
             <el-option
               v-for="item in subjectList"
@@ -34,7 +32,7 @@
         </el-form-item>
         <el-form-item label="阶段" prop="step">
           <el-select
-            style="width:300px"
+            class="select"
             v-model="form.step"
             value-key=""
             placeholder="请选择阶段"
@@ -50,9 +48,9 @@
         </el-form-item>
         <el-form-item label="企业" prop="enterprise">
           <el-select
-            style="width:300px"
             v-model="form.enterprise"
             placeholder="请选择企业"
+            class="select"
           >
             <el-option
               v-for="item in erterpriseList"
@@ -104,16 +102,14 @@
         <el-form-item
           label="试题标题"
           prop="title"
-          class="textFull"
+          class="setMargin"
           size="normal"
         >
           <quill-editor
             ref="myQuillEditor"
-            :content="form.title"
             v-model="form.title"
             :options="editorOption"
-            class="textBlock"
-            @change="onEditorChange('title')"
+            @blur="onEditorChange('title')"
           />
           <!-- @change="onEditorChange($event)" -->
         </el-form-item>
@@ -126,7 +122,7 @@
         <el-form-item
           label="答案解析"
           prop="answer_analyze"
-          class="textFull"
+          class="setMargin"
           size="normal"
         >
           <quill-editor
@@ -358,6 +354,7 @@ export default {
     },
     // 题型选择
     typechange() {
+      // 清除部分表单的校验规则
       this.$refs.form.clearValidate([
         'single_select_answer',
         'short_answer',
@@ -377,43 +374,79 @@ export default {
 </script>
 
 <style lang="less">
-.el-form-item {
-  margin-bottom: 22px;
-}
-.el-form-item__label {
-  text-align: left !important;
-}
-.textFull div.el-form-item__content {
-  margin-left: 0 !important;
-}
+// .el-form-item {
+//   margin-bottom: 22px;
+// }
+// .el-form-item__label {
+//   text-align: left !important;
+// }
+// .textFull div.el-form-item__content {
+//   margin-left: 0 !important;
+// }
 
-.textFull .el-form-item__label {
-  display: block;
-  float: none !important;
-}
+// .textFull .el-form-item__label {
+//   display: block;
+//   float: none !important;
+// }
 
-.singleGroup .singleRadio {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-}
-.edit_container {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-.ql-editor {
-  height: 300px;
-}
-.setMargin {
-  margin-left: 0px !important;
-  margin-top: 40px;
-}
-.avatar-uploader {
-  text-align: left;
+// .singleGroup .singleRadio {
+//   display: flex;
+//   justify-content: space-between;
+//   align-items: center;
+//   width: 100%;
+// }
+// .edit_container {
+//   font-family: 'Avenir', Helvetica, Arial, sans-serif;
+//   -webkit-font-smoothing: antialiased;
+//   -moz-osx-font-smoothing: grayscale;
+//   text-align: center;
+//   color: #2c3e50;
+//   margin-top: 60px;
+// }
+// .ql-editor {
+//   height: 300px;
+// }
+// .setMargin {
+//   margin-left: 0px !important;
+//   margin-top: 40px;
+// }
+// .avatar-uploader {
+//   text-align: left;
+// }
+// 如果有直接更改第三方的样式，不要加scoped
+.question-edit {
+  .el-dialog__header {
+    padding: 0;
+    text-align: left;
+  }
+  .title {
+    color: #fff;
+    padding-left: 15px;
+    height: 54px;
+    line-height: 54px;
+    background-color: #04bcfa;
+  }
+  .el-dialog__headerbtn .el-dialog__close {
+    color: #fff;
+  }
+  .form {
+    width: 832px;
+    margin: 0 auto;
+    .select {
+      width: 300px;
+    }
+  }
+  .hrMargin {
+    margin-bottom: 20px;
+  }
+  .setMargin {
+    .el-form-item__content {
+      margin-left: 0px !important;
+      margin-top: 40px;
+    }
+  }
+  .ql-editor {
+    height: 200px;
+  }
 }
 </style>

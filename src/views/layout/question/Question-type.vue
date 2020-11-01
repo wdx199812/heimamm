@@ -67,8 +67,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 200px;
-    overflow: hidden;
+    margin-bottom: 10px;
   }
 }
 </style>

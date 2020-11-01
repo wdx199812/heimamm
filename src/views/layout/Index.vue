@@ -35,6 +35,22 @@
           router
           :collapse="isCollapse"
         >
+          <div
+            v-for="item in $router.options.routes[2].children"
+            :key="item.meta.fullpath"
+          >
+            <el-menu-item
+              :index="item.meta.fullpath"
+              v-if="item.meta.roles.includes(rolename)"
+            >
+              <i :class="item.meta.icon"></i>
+              <span slot="title">{{ item.meta.title }}</span>
+            </el-menu-item>
+          </div>
+          <!-- <el-menu-item index="/layout/welcome">
+            <i class="el-icon-s-home"></i>
+            <span slot="title">首页</span>
+          </el-menu-item>
           <el-menu-item index="/layout/chart">
             <i class="el-icon-pie-chart"></i>
             <span slot="title">数据预览</span>
@@ -54,7 +70,7 @@
           <el-menu-item index="/layout/subject">
             <i class="el-icon-notebook-2"></i>
             <span slot="title">学科列表</span>
-          </el-menu-item>
+          </el-menu-item> -->
         </el-menu>
       </el-aside>
       <el-main class=" main">
@@ -77,11 +93,22 @@ export default {
       defaultActive: '/layout/chart', //侧边栏router对应菜单的index
       avatar: '', // header 用户头像
       username: '', //用户名
+      rolename: '', //角色名   超级管理员/管理员/老师/学生
     };
   },
   computed: {},
-  watch: {},
-  created() {},
+  watch: {
+    // 监听地址栏的值
+    // 解决地址栏直接输入地址访问非权限的网站问题
+    $route(newvalue) {
+      if (!newvalue.meta.roles.includes(this.rolename)) {
+        this.$message.error('对不起，你无权访问此网站');
+        this.$router.push('/login');
+      }
+      // 把当前地址栏中的路径给到default-active中 对应选中的index
+      this.defaultActive = this.$route.path;
+    },
+  },
   mounted() {
     // 把当前地址栏中的路径给到default-active中 对应选中的index
     this.defaultActive = this.$route.path;
@@ -117,8 +144,18 @@ export default {
           token: gettoken(),
         },
       });
-      this.avatar = process.env.VUE_APP_BASEURL + res.data.avatar;
+      this.avatar = process.env.VUE_APP_BASEURL + '/' + res.data.avatar;
       this.username = res.data.username;
+      this.rolename = res.data.role;
+      // 根据登录角色信息给权限
+      // 解决强制刷新的非权限访问
+      if (!this.$route.meta.roles.includes(res.data.role)) {
+        this.$message.error('对不起，你无权访问此网站');
+        this.$router.push('/login');
+      } else {
+        this.$store.commit('setuserInfo', res.data);
+      }
+      // console.log(this.$route.meta.roles.includes(res.data.role));
     },
   },
 };

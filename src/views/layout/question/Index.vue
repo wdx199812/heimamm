@@ -301,7 +301,7 @@ export default {
         params: {
           page: this.page,
           limit: this.limit,
-          ...this.form, //三位运算符
+          ...this.form, //展开运算符
         },
       });
       if (res.code == 200) {

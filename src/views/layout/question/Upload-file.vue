@@ -30,7 +30,7 @@ export default {
   },
   data() {
     return {
-      UploadUrl: process.env.VUE_APP_BASEURL + 'question/upload',
+      UploadUrl: process.env.VUE_APP_BASEURL + '/question/upload',
 
       data: {
         file: '', //上传所携带的参数
@@ -63,7 +63,7 @@ export default {
     }
   },
   methods: {
-    // 上传前
+    // 上传前  限制上传的大小和格式
     beforeAvatarUpload(file) {
       this.data.file = file; //给请求参数赋值
       if (this.type == 'image') {
@@ -97,11 +97,11 @@ export default {
       console.log(file);
       if (this.type == 'image') {
         //预览图片
-        this.imageUrl = process.env.VUE_APP_BASEURL + res.data.url;
+        this.imageUrl = process.env.VUE_APP_BASEURL + '/' + res.data.url;
         this.obj.image = res.data.url;
       } else if (this.type == 'video') {
         // 把地址赋值给src 显示预览效果
-        this.videoUrl = process.env.VUE_APP_BASEURL + res.data.url;
+        this.videoUrl = process.env.VUE_APP_BASEURL + '/' + res.data.url;
         // 把值赋值给模型中
         this.obj.video = res.data.url;
       }
@@ -110,10 +110,27 @@ export default {
 };
 </script>
 
-<style lang="less" scoped>
+<style lang="less">
 .avatar-uploader {
-  justify-content: left;
   text-align: left;
+}
+.avatar-uploader .el-upload {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.avatar-uploader .el-upload:hover {
+  border-color: #409eff;
+}
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  line-height: 178px !important;
+  text-align: center;
 }
 .avatar {
   width: 178px;

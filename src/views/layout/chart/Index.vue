@@ -67,7 +67,6 @@ export default {
   methods: {
     async getStatisticsData() {
       const res = await this.$axios.post('/data/statistics');
-      console.log(res);
       if (res.code === 200) {
         this.statistics = res.data;
 
@@ -77,7 +76,6 @@ export default {
     },
     // 图一
     getEchartData(ele, title, color, data) {
-      console.log(data);
       let chart = this.$refs[ele];
       let myChart = null;
       if (chart) {
@@ -134,7 +132,6 @@ export default {
     // 数据接口
     async getTitleData() {
       const res = await this.$axios.post('/data/title');
-      console.log(res);
       if (res.code == 200) {
         this.increment_questions = res.data.increment_questions;
         this.increment_users = res.data.increment_users;
@@ -146,37 +143,37 @@ export default {
           this.refs[0],
           this.title[0],
           this.colors[0],
-          this.increment_questions
+          this.increment_users
         );
         this.getEchartData(
           this.refs[1],
           this.title[1],
           this.colors[0],
-          this.increment_users
+          this.total_users
         );
         this.getEchartData(
           this.refs[2],
           this.title[2],
           this.colors[1],
-          this.personal_questions
+          this.increment_questions
         );
         this.getEchartData(
           this.refs[3],
           this.title[3],
           this.colors[1],
-          this.total_done_questions
+          this.total_questions
         );
         this.getEchartData(
           this.refs[4],
           this.title[4],
           this.colors[1],
-          this.total_questions
+          this.total_done_questions
         );
         this.getEchartData(
           this.refs[5],
           this.title[5],
           this.colors[1],
-          this.total_users
+          this.personal_questions
         );
         this.titleObj = res.data.data;
       }
@@ -190,7 +187,7 @@ export default {
 
       // 指定图表的配置项和数据
       var option = {
-        color: ['#f60'],
+        color: ['#f60', '#080'],
         tooltip: {
           trigger: 'item',
           formatter: '{a} <br/>{b}: {c} ({d}%)',
@@ -247,6 +244,6 @@ export default {
   height: 120px;
 }
 .cardTwo {
-  height: 500px;
+  height: 700px;
 }
 </style>
